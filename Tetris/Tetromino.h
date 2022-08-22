@@ -32,8 +32,7 @@ public:
 	void Drop();
 	void Left();
 	void Right();
-
-	void HoldBlockSwap();
+	void Hold();
 
 	void SetPos(POS _x = 4, POS _y = 0);
 
@@ -42,6 +41,5 @@ public:
 	bool  check(CPOS _x, CPOS _y) const;
 
 private:
-	void DrawBlock(POS _x, POS _y, LPCSTR _ch, COLOR _Color) const;
 	void SaveBlock();
 };

@@ -115,7 +115,7 @@ void Tetromino::Right()
 		x++;
 }
 
-void Tetromino::HoldBlockSwap()
+void Tetromino::Hold()
 {
 	if (!bHold)
 		return;
@@ -134,22 +134,21 @@ void Tetromino::HoldBlockSwap()
 
 void Tetromino::DrawTetromino() const
 {
-	
-	printf("x : %d\ny : %d", x, y);
+	// printf("x : %d\ny : %d", x, y);
 
 	CPOSPTR dx = block->Getdx();
 	CPOSPTR dy = block->Getdy();
 	COLOR color = block->GetColor();
 
+	POS _x = 0;
+	POS _y = 0;
 	for (int i = 0; i < 4; ++i)
-		DrawBlock(x + dx[i], y + dy[i], BLOCK, color);
-}
+	{
+		_x = x + dx[i];
+		_y = y + dy[i];
 
-void Tetromino::DrawBlock(POS _x, POS _y, LPCSTR _ch, COLOR _Color) const
-{
-	GotoXY((_x + 2) << 1, _y);
-	SetColor(_Color);
-	printf(_ch);
+		Draw((_x + 2) << 1, _y, color, BLOCK);
+	}
 }
 
 bool Tetromino::check(CPOS _x, CPOS _y) const

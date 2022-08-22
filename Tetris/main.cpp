@@ -9,11 +9,10 @@
 Tetromino tetromino;
 int score = 0;
 
-void Init()
-{
-	system(" mode  con lines=26   cols=28 ");
-	SetConsoleTitleA(TITLE);
-}
+
+void Init();
+bool GameOver();
+bool Pause();
 
 void Run()
 {
@@ -42,24 +41,28 @@ void Run()
 				tetromino.Drop();
 				break;
 			case 'c':
-				tetromino.HoldBlockSwap();
+				tetromino.Hold();
 				break;
 			case 'z':
-				return;
+				if (Pause())
+					return;
+				break;
 			default:
 				break;
 			}
 		}
-		if (n % 5 == 0)
+		if (n++ % 5 == 0)
 			tetromino.Down();
-		n++;
+		
 		if (!tetromino.check())
 			return;
 
 		score += RemoveLines();
 
-		Draw();
-		printf("\nscore : %d\n", score);
+		DrawBorder();
+		DrawBlock();
+		Draw(0, BOARD_ROW_SIZE + 2, WHITE, "score : %d", score);
+
 		tetromino.DrawTetromino();
 		Sleep(100);
 	}
@@ -67,7 +70,7 @@ void Run()
 
 
 
-int _tmain(int argc, TCHAR* argv[])
+int main()
 {
 	Init();
 
@@ -78,17 +81,10 @@ int _tmain(int argc, TCHAR* argv[])
 		system("cls");
 		SetColor(WHITE);
 
-		GotoXY(10, 10);
-		printf("GAME OVER");
-
-		GotoXY(8, 14);
-		printf("play again [x]");
-
-		GotoXY(8, 15);
-		printf("exit       [z]");
-
-		GotoXY(17, 20);
-		printf("score : %d", score);
+		Draw(10, 10, "GAME OVER");
+		Draw(8,  14, "play again [x]");
+		Draw(8,  15, "exit       [z]");
+		Draw(17, 20, "score : %d", score);
 
 		while (true) {
 			if (_kbhit())
@@ -118,4 +114,85 @@ exit:
 	system("cls");
 	SetColor(WHITE);
 	return 0;
+}
+
+bool GameOver()
+{
+	bool bEnd = false;
+
+	system("cls");
+	SetColor(WHITE);
+
+	Draw(10, 10, "GAME OVER");
+	Draw(8, 14, "play again [x]");
+	Draw(8, 15, "exit       [z]");
+	Draw(17, 20, "score : %d", score);
+
+	while (true) {
+		if (_kbhit())
+		{
+			switch (_getch())
+			{
+			case 'z':
+				bEnd = true;
+				goto exitloop;
+
+			case 'x':
+				goto exitloop;
+
+			default:
+				break;
+			}
+		}
+	}
+
+exitloop:
+	score = 0;
+	ClearBorad();
+	tetromino.SetBlockType();
+	tetromino.SetPos();
+
+	system("cls");
+	SetColor(WHITE);
+	return bEnd;
+}
+bool Pause()
+{
+	bool bEnd = false;
+
+	system("cls");
+	SetColor(WHITE);
+
+	Draw(10, 10, "Pause");
+	Draw(8, 14, "play again [x]");
+	Draw(8, 15, "exit       [z]");
+	Draw(17, 20, "score : %d", score);
+
+	while (true) {
+		if (_kbhit())
+		{
+			switch (_getch())
+			{
+			case 'z':
+				bEnd = true;
+				goto exitloop;
+
+			case 'x':
+				goto exitloop;
+
+			default:
+				break;
+			}
+		}
+	}
+
+exitloop:
+	system("cls");
+	SetColor(WHITE);
+	return bEnd;
+}
+void Init()
+{
+	system(" mode  con lines=26   cols=28 ");
+	SetConsoleTitleA(TITLE);
 }

@@ -5,5 +5,7 @@
 #include "Tetromino.h"
 
 void GotoXY(POS x, POS y);
-
 void SetColor(COLOR color);
+
+void Draw(POS x, POS y, COLOR color, LPCSTR Format, ...);
+void Draw(POS x, POS y, LPCSTR Format, ...);

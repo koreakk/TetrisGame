@@ -17,4 +17,5 @@ bool BoardSizeCheck(POS x, POS y);
 int RemoveLines();
 void ClearBorad();
 
-void Draw();
+void DrawBorder();
+void DrawBlock();

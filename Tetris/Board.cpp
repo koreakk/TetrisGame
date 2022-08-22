@@ -52,42 +52,30 @@ void ClearBorad()
 		memset(board[i], 0, sizeof(board[i]));
 }
 
+
 void DrawBorder()
 {
 	SetColor(WHITE);
-	printf(BORDER);
-}
-
-void DrawBlock(COLOR color)
-{
-	if (color == 0)
+	for (POS i = 0; i < BOARD_ROW_SIZE; ++i)
 	{
-		SetColor(WHITE);
-		printf(SPACE);
+		Draw(2, i, BORDER);
+		Draw((BOARD_COL_SIZE + 2) << 1, i, BORDER);
 	}
-	else
+
+	for (POS i = 0; i < BOARD_COL_SIZE + 2; ++i)
 	{
-		SetColor(color);
-		printf(BLOCK);
+		Draw((i + 1) << 1, BOARD_ROW_SIZE, BORDER);
 	}
 }
 
-void Draw()
+void DrawBlock()
 {
-	for (POS i = 0; i < BOARD_ROW_SIZE + 1; i++) {
-		printf(SPACE);
-
-		for (POS j = 0; j < BOARD_COL_SIZE + 2; j++)
-		{
-			if (!BoardSizeCheck(j - 1, i)) {
-				DrawBorder();
+	for (POS i = 0; i < BOARD_ROW_SIZE; ++i) {
+		for (POS j = 0; j < BOARD_COL_SIZE; ++j) {
+			if (board[i][j] == 0)
 				continue;
-			}
 
-			DrawBlock(board[i][j - 1]);
+			Draw((j + 2) << 1, i, (COLOR)board[i][j], BLOCK);
 		}
-		putchar('\n');
 	}
-
-	SetColor(WHITE);
 }
