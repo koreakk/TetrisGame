@@ -1,50 +1,22 @@
 #include "stdafx.h"
+#include "SetText.h"
 #include "Board.h"
 #include "Block.h"
 #include "Tetromino.h"
 
-void DrawBorder()
+#define TITLE "테트리스"
+
+Tetromino tetromino;
+int score = 0;
+
+void Init()
 {
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
-	printf(BORDER);
+	system(" mode  con lines=26   cols=28 ");
+	SetConsoleTitleA(TITLE);
 }
 
-void DrawBlock(unsigned short c)
+void Run()
 {
-	if (c == 0)
-	{
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
-		printf(SPACE);
-	}
-	else
-	{
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), c);
-		printf(BLOCK);
-	}
-}
-
-void Draw()
-{
-	for (int i = 0; i < BOARD_ROW_SIZE + 1; i++) {
-		for (int j = 0; j < BOARD_COL_SIZE + 2; j++)
-		{
-			if (!BoardSizeCheck(j - 1, i)) {
-				DrawBorder();
-				continue;
-			}
-
-			DrawBlock(board[i][j - 1]);
-		}
-		putchar('\n');
-	}
-
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
-}
-
-int _tmain(int argc, TCHAR* argv[])
-{
-	Tetromino A(I_Block);
-	A.SetBlockType(L_Block);
 	while (1)
 	{
 		system("cls");
@@ -54,33 +26,91 @@ int _tmain(int argc, TCHAR* argv[])
 			switch (_getch())
 			{
 			case 'w':
-				A.Rotate();
+				tetromino.Rotate();
 				break;
 			case 'a':
-				A.Left();
-				break;
-			case 's':
-				A.Down();
+				tetromino.Left();
 				break;
 			case 'd':
-				A.Right();
+				tetromino.Right();
 				break;
-			case 'q':
-				A.SetBlockType(randomBlockType());
+			case 's':
+				tetromino.Down();
+				break;
+			case ' ':
+				tetromino.Drop();
 				break;
 			case 'z':
-				goto exitloop;
+				return;
 			default:
 				break;
 			}
 		}
-		//A.Down();
+
+		tetromino.Down();
+		if (!tetromino.check())
+			return;
+
+		score += RemoveLines();
+
 		Draw();
-		A.DrawTetromino();
+		printf("\nscore : %d\n", score);
+		tetromino.DrawTetromino();
 		Sleep(100);
 	}
+}
 
-exitloop:
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE);
+
+
+int _tmain(int argc, TCHAR* argv[])
+{
+	Init();
+
+	while (true)
+	{
+		Run();
+
+		system("cls");
+		SetColor(WHITE);
+
+		GotoXY(10, 10);
+		printf("GAME OVER");
+
+		GotoXY(8, 14);
+		printf("play again [x]");
+
+		GotoXY(8, 15);
+		printf("exit       [z]");
+
+		GotoXY(17, 20);
+		printf("score : %d", score);
+
+		while (true) {
+			if (_kbhit())
+			{
+				switch (_getch())
+				{
+				case 'z':
+					goto exit;
+
+				case 'x':
+					goto play;
+
+				default:
+					break;
+				}
+			}
+		}
+		
+	play:
+		score = 0;
+		ClearBorad();
+		tetromino.SetBlockType();
+		tetromino.SetPos();
+	}
+
+exit:
+	system("cls");
+	SetColor(WHITE);
 	return 0;
 }

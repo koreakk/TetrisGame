@@ -1,15 +1,24 @@
 #include "stdafx.h"
 #include "Tetromino.h"
+#include "SetText.h"
+#include "Block.h"
 #include "Board.h"
 
+Tetromino::Tetromino()
+	: x(4), y(0)
+{
+	type = randomBlockType();
+	block = CreateBlockTable[type]();
+}
+
 Tetromino::Tetromino(Block_Type _type)
-	: x(0), y(0), type(_type), bMove(true),
+	: x(4), y(0), type(_type),
 	block(CreateBlockTable[_type]())
 {
 }
 
 Tetromino::Tetromino(Block_Type _type, POS _x, POS _y)
-	: x(_x), y(_y), type(_type), bMove(true),
+	: x(_x), y(_y), type(_type),
 	block(CreateBlockTable[_type]())
 {
 }
@@ -24,6 +33,12 @@ void Tetromino::SetBlockType(Block_Type _type)
 	block = CreateBlockTable[type]();
 }
 
+void Tetromino::SetBlockType()
+{
+	SetBlockType(randomBlockType());
+}
+
+
 void Tetromino::Rotate(bool revers)
 {
 	block.Rotate(revers);
@@ -35,9 +50,18 @@ void Tetromino::Down()
 		y++;
 	else {
 		SaveBlock();
-		SetBlockType(randomBlockType());
 		SetPos();
+		SetBlockType();
 	}
+}
+
+void Tetromino::Drop()
+{
+	while (check(x, y + 1)) y++;
+
+	SaveBlock();
+	SetPos();
+	SetBlockType();
 }
 
 void Tetromino::Left()
@@ -55,8 +79,8 @@ void Tetromino::Right()
 
 void Tetromino::DrawTetromino() const
 {
-	if (bMove)
-		printf("x: %d\ny: %d", x, y);
+	
+	printf("x : %d\ny : %d", x, y);
 
 	CPOSPTR dx = block.Getdx();
 	CPOSPTR dy = block.Getdy();
@@ -68,9 +92,8 @@ void Tetromino::DrawTetromino() const
 
 void Tetromino::DrawBlock(POS _x, POS _y, LPCSTR _ch, COLOR _Color) const
 {
-	COORD pos = { (_x + 1) << 1, _y};
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), _Color);
+	GotoXY((_x + 2) << 1, _y);
+	SetColor(_Color);
 	printf(_ch);
 }
 
@@ -94,6 +117,11 @@ bool Tetromino::check(CPOS _x, CPOS _y) const
 	}
 	
 	return true;
+}
+
+bool Tetromino::check() const
+{
+	return check(x, y);
 }
 
 void Tetromino::SaveBlock()
