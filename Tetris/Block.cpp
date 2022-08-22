@@ -113,12 +113,18 @@ COLOR Block::GetColor() const
 
 CPOSPTR Block::Getdx() const
 { 
+	if (dx == nullptr)
+		return nullptr;
+
 	return dx[idx];
 }
 
 
 CPOSPTR Block::Getdy() const
 {
+	if (dy == nullptr)
+		return nullptr;
+
 	return dy[idx];
 }
 
@@ -128,74 +134,74 @@ void Block::Rotate(bool reverse)
 	idx %= size;
 }
 
-Block Block::CreateIBlock()
+Block* Block::CreateIBlock()
 {
 	POSSIZE size = 2;
 	CPOS _dx[][4] = { {0,0,0,0}, {0,1,2,3} };
 	CPOS _dy[][4] = { {0,1,2,3}, {0,0,0,0} };
 	COLOR _color = AQUA;
 
-	return Block(_dx, _dy, size, _color);
+	return new Block(_dx, _dy, size, _color);
 }
 
-Block Block::CreateOBlock()
+Block* Block::CreateOBlock()
 {
 	POSSIZE size = 1;
 	CPOS _dx[][4] = { {0,1,0,1} };
 	CPOS _dy[][4] = { {0,0,1,1} };
 	COLOR _color = YELLOW;
 
-	return Block(_dx, _dy, size, _color);
+	return new Block(_dx, _dy, size, _color);
 }
 
-Block Block::CreateZBlock()
+Block* Block::CreateZBlock()
 {
 	POSSIZE size = 2;
 	CPOS _dx[][4] = { {0,1,1,2}, {1,0,1,0} };
 	CPOS _dy[][4] = { {0,0,1,1}, {0,1,1,2} };
 	COLOR _color = RED;
 
-	return Block(_dx, _dy, size, _color);
+	return new Block(_dx, _dy, size, _color);
 }
 
-Block Block::CreateSBlock()
+Block* Block::CreateSBlock()
 {
 	POSSIZE size = 2;
 	CPOS _dx[][4] = { {1,2,0,1}, {0,0,1,1} };
 	CPOS _dy[][4] = { {0,0,1,1}, {0,1,1,2} };
 	COLOR _color = GREEN;
 
-	return Block(_dx, _dy, size, _color);
+	return new Block(_dx, _dy, size, _color);
 }
 
-Block Block::CreateJBlock()
+Block* Block::CreateJBlock()
 {
 	POSSIZE size = 4;
 	CPOS _dx[][4] = { {1,1,0,1}, {0,0,1,2}, {0,1,0,0}, {0,1,2,2} };
 	CPOS _dy[][4] = { {0,1,2,2}, {0,1,1,1}, {0,0,1,2}, {0,0,0,1} };
 	COLOR _color = BLUE;
 
-	return Block(_dx, _dy, size, _color);
+	return new Block(_dx, _dy, size, _color);
 }
 
-Block Block::CreateLBlock()
+Block* Block::CreateLBlock()
 {
 	POSSIZE size = 4;
 	CPOS _dx[][4] = { {0,0,0,1}, {0,1,2,0}, {0,1,1,1}, {2,0,1,2} };
 	CPOS _dy[][4] = { {0,1,2,2}, {0,0,0,1}, {0,0,1,2}, {0,1,1,1} };
 	COLOR _color = WHITE;
 
-	return Block(_dx, _dy, size, _color);
+	return new Block(_dx, _dy, size, _color);
 }
 
-Block Block::CreateTBlock()
+Block* Block::CreateTBlock()
 {
 	POSSIZE size = 4;
 	CPOS _dx[][4] = { {0,1,2,1}, {1,0,1,1}, {1,0,1,2}, {0,0,1,0} };
 	CPOS _dy[][4] = { {0,0,0,1}, {0,1,1,2}, {0,1,1,1}, {0,1,1,2} };
 	COLOR _color = PURPLE;
 
-	return Block(_dx, _dy, size, _color);
+	return new Block(_dx, _dy, size, _color);
 }
 
 extern CreateBlock CreateBlockTable[7] = {

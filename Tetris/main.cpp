@@ -17,6 +17,7 @@ void Init()
 
 void Run()
 {
+	int n = 0;
 	while (1)
 	{
 		system("cls");
@@ -40,14 +41,18 @@ void Run()
 			case ' ':
 				tetromino.Drop();
 				break;
+			case 'c':
+				tetromino.HoldBlockSwap();
+				break;
 			case 'z':
 				return;
 			default:
 				break;
 			}
 		}
-
-		tetromino.Down();
+		if (n % 5 == 0)
+			tetromino.Down();
+		n++;
 		if (!tetromino.check())
 			return;
 

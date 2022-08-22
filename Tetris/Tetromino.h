@@ -12,8 +12,12 @@ struct Tetromino
 private:
 	POS x;
 	POS y;
-	Block_Type type;
-	Block block;
+
+	Block* block;
+	Block* HoldBlock;
+
+	bool bHold;
+
 public:
 	Tetromino();
 	explicit Tetromino(Block_Type _type);
@@ -28,7 +32,9 @@ public:
 	void Drop();
 	void Left();
 	void Right();
-	
+
+	void HoldBlockSwap();
+
 	void SetPos(POS _x = 4, POS _y = 0);
 
 	void DrawTetromino() const;

@@ -42,16 +42,16 @@ public:
 	void Rotate(bool reverse);
 
 public:
-	static Block CreateIBlock();
-	static Block CreateOBlock();
-	static Block CreateZBlock();
-	static Block CreateSBlock();
-	static Block CreateJBlock();
-	static Block CreateLBlock();
-	static Block CreateTBlock();
+	static Block* CreateIBlock();
+	static Block* CreateOBlock();
+	static Block* CreateZBlock();
+	static Block* CreateSBlock();
+	static Block* CreateJBlock();
+	static Block* CreateLBlock();
+	static Block* CreateTBlock();
 };
 
-using CreateBlock = Block(*)();
+using CreateBlock = Block * (*)();
 extern CreateBlock CreateBlockTable[7];
 
 typedef enum {

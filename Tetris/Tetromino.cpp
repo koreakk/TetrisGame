@@ -5,32 +5,46 @@
 #include "Board.h"
 
 Tetromino::Tetromino()
-	: x(4), y(0)
+	: x(4), y(0), bHold(true),
+	block(nullptr),
+	HoldBlock(nullptr)
 {
-	type = randomBlockType();
+	Block_Type type = randomBlockType();
 	block = CreateBlockTable[type]();
+
 }
 
 Tetromino::Tetromino(Block_Type _type)
-	: x(4), y(0), type(_type),
-	block(CreateBlockTable[_type]())
+	: x(4), y(0), bHold(true),
+	block(CreateBlockTable[_type]()),
+	HoldBlock(nullptr)
 {
 }
 
 Tetromino::Tetromino(Block_Type _type, POS _x, POS _y)
-	: x(_x), y(_y), type(_type),
-	block(CreateBlockTable[_type]())
+	: x(_x), y(_y), bHold(true),
+	block(CreateBlockTable[_type]()),
+	HoldBlock(nullptr)
 {
 }
 
 Tetromino::~Tetromino()
 {
+	if (block != nullptr)
+		delete block;
+	if (HoldBlock != nullptr)
+		delete HoldBlock;
+
+	block = nullptr;
+	HoldBlock = nullptr;
 }
 
 void Tetromino::SetBlockType(Block_Type _type)
 {
-	type = _type;
-	block = CreateBlockTable[type]();
+	if (block != nullptr)
+		delete block;
+	block = CreateBlockTable[_type]();
+	bHold = true;
 }
 
 void Tetromino::SetBlockType()
@@ -41,21 +55,21 @@ void Tetromino::SetBlockType()
 
 void Tetromino::Rotate(bool reverse)
 {
-	block.Rotate(reverse);
+	block->Rotate(reverse);
 
 	if (check())
 		return;
 
-	for (int i = 1; i <= 2; ++i) {
-		// check right
-		if (check(x - i, y)) {
-			x -= i;
-			return;
-		}
-
+	for (int i = 1; i <= 3; ++i) {
 		// check left
 		if (check(x + i, y)) {
 			x += i;
+			return;
+		}
+
+		// check right
+		if (check(x - i, y)) {
+			x -= i;
 			return;
 		}
 
@@ -66,7 +80,7 @@ void Tetromino::Rotate(bool reverse)
 		}
 	}
 
-	block.Rotate(!reverse);
+	block->Rotate(!reverse);
 }
 
 void Tetromino::Down()
@@ -101,15 +115,31 @@ void Tetromino::Right()
 		x++;
 }
 
+void Tetromino::HoldBlockSwap()
+{
+	if (!bHold)
+		return;
+
+	Block* temp = block;
+	block = HoldBlock;
+	HoldBlock = temp;
+
+	if (block == nullptr)
+		SetBlockType();
+
+	SetPos();
+	bHold = false;
+}
+
 
 void Tetromino::DrawTetromino() const
 {
 	
 	printf("x : %d\ny : %d", x, y);
 
-	CPOSPTR dx = block.Getdx();
-	CPOSPTR dy = block.Getdy();
-	COLOR color = block.GetColor();
+	CPOSPTR dx = block->Getdx();
+	CPOSPTR dy = block->Getdy();
+	COLOR color = block->GetColor();
 
 	for (int i = 0; i < 4; ++i)
 		DrawBlock(x + dx[i], y + dy[i], BLOCK, color);
@@ -124,8 +154,8 @@ void Tetromino::DrawBlock(POS _x, POS _y, LPCSTR _ch, COLOR _Color) const
 
 bool Tetromino::check(CPOS _x, CPOS _y) const
 {
-	CPOSPTR dx = block.Getdx();
-	CPOSPTR dy = block.Getdy();
+	CPOSPTR dx = block->Getdx();
+	CPOSPTR dy = block->Getdy();
 
 	POS x = 0;
 	POS y = 0;
@@ -151,9 +181,9 @@ bool Tetromino::check() const
 
 void Tetromino::SaveBlock()
 {
-	CPOSPTR dx = block.Getdx();
-	CPOSPTR dy = block.Getdy();
-	COLOR color = block.GetColor();
+	CPOSPTR dx = block->Getdx();
+	CPOSPTR dy = block->Getdy();
+	COLOR color = block->GetColor();
 
 	POS _x = 0;
 	POS _y = 0;
