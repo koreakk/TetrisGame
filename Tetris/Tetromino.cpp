@@ -39,9 +39,34 @@ void Tetromino::SetBlockType()
 }
 
 
-void Tetromino::Rotate(bool revers)
+void Tetromino::Rotate(bool reverse)
 {
-	block.Rotate(revers);
+	block.Rotate(reverse);
+
+	if (check())
+		return;
+
+	for (int i = 1; i <= 2; ++i) {
+		// check right
+		if (check(x - i, y)) {
+			x -= i;
+			return;
+		}
+
+		// check left
+		if (check(x + i, y)) {
+			x += i;
+			return;
+		}
+
+		// check under
+		if (check(x, y - i)) {
+			y -= i;
+			return;
+		}
+	}
+
+	block.Rotate(!reverse);
 }
 
 void Tetromino::Down()

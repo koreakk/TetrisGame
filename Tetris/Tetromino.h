@@ -22,7 +22,7 @@ public:
 
 	void SetBlockType(Block_Type _type);
 	void SetBlockType();
-	void Rotate(bool revers = false);
+	void Rotate(bool reverse = false);
 	
 	void Down();
 	void Drop();
