@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "SetText.h"
-#include "Board.h"
 #include "Block.h"
 #include "Tetromino.h"
+#include "Board.h"
+#include "Draw.h"
 
 #define TITLE "테트리스"
 
@@ -55,15 +55,18 @@ void Run()
 			tetromino.Down();
 		
 		if (!tetromino.check())
-			return;
+		{
+			if (GameOver())
+				return;
+		}
 
 		score += RemoveLines();
 
 		DrawBorder();
 		DrawBlock();
-		Draw(0, BOARD_ROW_SIZE + 2, WHITE, "score : %d", score);
+		DrawTetromino(tetromino);
 
-		tetromino.DrawTetromino();
+		Draw(0, BOARD_ROW_SIZE + 2, WHITE, "score : %d", score);
 		Sleep(100);
 	}
 }
@@ -73,46 +76,11 @@ void Run()
 int main()
 {
 	Init();
+	Run();
 
-	while (true)
-	{
-		Run();
-
-		system("cls");
-		SetColor(WHITE);
-
-		Draw(10, 10, "GAME OVER");
-		Draw(8,  14, "play again [x]");
-		Draw(8,  15, "exit       [z]");
-		Draw(17, 20, "score : %d", score);
-
-		while (true) {
-			if (_kbhit())
-			{
-				switch (_getch())
-				{
-				case 'z':
-					goto exit;
-
-				case 'x':
-					goto play;
-
-				default:
-					break;
-				}
-			}
-		}
-		
-	play:
-		score = 0;
-		ClearBorad();
-		tetromino.SetBlockType();
-		tetromino.SetPos();
-	}
-
-exit:
 	system("cls");
 	SetColor(WHITE);
+
 	return 0;
 }
 

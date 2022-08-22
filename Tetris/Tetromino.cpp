@@ -1,8 +1,5 @@
 #include "stdafx.h"
 #include "Tetromino.h"
-#include "SetText.h"
-#include "Block.h"
-#include "Board.h"
 
 Tetromino::Tetromino()
 	: x(4), y(0), bHold(true),
@@ -39,6 +36,12 @@ Tetromino::~Tetromino()
 	HoldBlock = nullptr;
 }
 
+void Tetromino::SetPos(CPOS _x, CPOS _y)
+{
+	x = _x;
+	y = _y;
+}
+
 void Tetromino::SetBlockType(Block_Type _type)
 {
 	if (block != nullptr)
@@ -50,6 +53,32 @@ void Tetromino::SetBlockType(Block_Type _type)
 void Tetromino::SetBlockType()
 {
 	SetBlockType(randomBlockType());
+}
+
+
+CPOS Tetromino::GetX() const
+{
+	return x;
+}
+
+CPOS Tetromino::GetY() const
+{
+	return y;
+}
+
+CPOSPTR Tetromino::Getdx() const
+{
+	return block->Getdx();
+}
+
+CPOSPTR Tetromino::Getdy() const
+{
+	return block->Getdy();
+}
+
+COLOR Tetromino::GetColor() const
+{
+	return block->GetColor();
 }
 
 
@@ -131,26 +160,6 @@ void Tetromino::Hold()
 	bHold = false;
 }
 
-
-void Tetromino::DrawTetromino() const
-{
-	// printf("x : %d\ny : %d", x, y);
-
-	CPOSPTR dx = block->Getdx();
-	CPOSPTR dy = block->Getdy();
-	COLOR color = block->GetColor();
-
-	POS _x = 0;
-	POS _y = 0;
-	for (int i = 0; i < 4; ++i)
-	{
-		_x = x + dx[i];
-		_y = y + dy[i];
-
-		Draw((_x + 2) << 1, _y, color, BLOCK);
-	}
-}
-
 bool Tetromino::check(CPOS _x, CPOS _y) const
 {
 	CPOSPTR dx = block->Getdx();
@@ -196,10 +205,4 @@ void Tetromino::SaveBlock()
 
 		board[_y][_x] = color;
 	}
-}
-
-void Tetromino::SetPos(POS _x, POS _y)
-{
-	x = _x;
-	y = _y;
 }

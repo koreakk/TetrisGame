@@ -1,7 +1,5 @@
 #include "stdafx.h"
 #include "Board.h"
-#include "SetText.h"
-#include "Tetromino.h"
 
 extern unsigned short board[BOARD_ROW_SIZE][BOARD_COL_SIZE] = { 0, };
 
@@ -50,32 +48,4 @@ void ClearBorad()
 {
 	for (POS i = 0; i < BOARD_ROW_SIZE; ++i)
 		memset(board[i], 0, sizeof(board[i]));
-}
-
-
-void DrawBorder()
-{
-	SetColor(WHITE);
-	for (POS i = 0; i < BOARD_ROW_SIZE; ++i)
-	{
-		Draw(2, i, BORDER);
-		Draw((BOARD_COL_SIZE + 2) << 1, i, BORDER);
-	}
-
-	for (POS i = 0; i < BOARD_COL_SIZE + 2; ++i)
-	{
-		Draw((i + 1) << 1, BOARD_ROW_SIZE, BORDER);
-	}
-}
-
-void DrawBlock()
-{
-	for (POS i = 0; i < BOARD_ROW_SIZE; ++i) {
-		for (POS j = 0; j < BOARD_COL_SIZE; ++j) {
-			if (board[i][j] == 0)
-				continue;
-
-			Draw((j + 2) << 1, i, (COLOR)board[i][j], BLOCK);
-		}
-	}
 }
