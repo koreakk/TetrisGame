@@ -39,7 +39,7 @@ void Run()
 			case RIGHT:
 				tetromino.Right();
 				break;
-			case 's':
+			case DOWN:
 				tetromino.Down();
 				break;
 			case SPACE:
@@ -55,8 +55,8 @@ void Run()
 				break;
 			}
 		}
-		if (n++ % 3 == 0)
-			tetromino.Down();
+		if (n++ == 250)
+			tetromino.Down(), n = 0;
 		
 		if (!tetromino.check())
 			brunning = !GameOver();
@@ -68,7 +68,6 @@ void Run()
 		DrawTetromino(tetromino);
 		Draw(0, BOARD_ROW_SIZE + 2, WHITE, "score : %d", score);
 
-		Sleep(100);
 		ScreenFlipping();
 	}
 }
