@@ -10,7 +10,6 @@
 #define WHITE		7
 #define PURPLE		13
 
-typedef int			POSSIZE;
 typedef short		POS, * POSPTR;
 typedef const POS	CPOS, * CPOSPTR;
 typedef WORD		COLOR;
@@ -18,15 +17,15 @@ typedef WORD		COLOR;
 struct Block
 {
 private:
-	POSSIZE size;
-	POSPTR* dx;
-	POSPTR* dy;
-	COLOR color;
-	int idx;
+	int m_count;
+	int m_index;
+	POSPTR* m_dx;
+	POSPTR* m_dy;
+	COLOR m_color;
 
 public:
 	Block();
-	Block(CPOS _dx[][4], CPOS _dy[][4], POSSIZE _size, COLOR _color);
+	Block(CPOS dx[][4], CPOS dy[][4], int count, COLOR color);
 	Block(const Block& rhs);
 	Block(Block&& rhs) noexcept;
 	~Block();

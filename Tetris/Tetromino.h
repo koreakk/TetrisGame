@@ -6,21 +6,21 @@
 struct Tetromino
 {
 private:
-	POS x;
-	POS y;
+	POS m_x;
+	POS m_y;
 
-	Block* block;
-	Block* HoldBlock;
+	Block* m_pBlock;
+	Block* m_pHoldBlock;
 
-	bool bHold;
+	bool m_bHold;
 public:
 	Tetromino();
-	explicit Tetromino(Block_Type _type);
-	Tetromino(Block_Type _type, POS _x, POS _y);
+	explicit Tetromino(Block_Type type);
+	Tetromino(Block_Type type, POS x, POS y);
 	~Tetromino();
 
-	void SetPos(CPOS _x = 4, CPOS _y = 0);
-	void SetBlockType(Block_Type _type);
+	void SetPos(CPOS x = 4, CPOS y = 0);
+	void SetBlockType(Block_Type type);
 	void SetBlockType();
 
 	CPOS GetX() const;
@@ -37,7 +37,7 @@ public:
 	void Hold();
 
 	bool check() const;
-	bool check(CPOS _x, CPOS _y) const;
+	bool check(CPOS x, CPOS y) const;
 
 private:
 	void SaveBlock();

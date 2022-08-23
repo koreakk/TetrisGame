@@ -2,52 +2,51 @@
 #include "Tetromino.h"
 
 Tetromino::Tetromino()
-	: x(4), y(0), bHold(true),
-	block(nullptr),
-	HoldBlock(nullptr)
+	: m_x(4), m_y(0), m_bHold(true),
+	m_pBlock(nullptr),
+	m_pHoldBlock(nullptr)
 {
 	Block_Type type = randomBlockType();
-	block = CreateBlockTable[type]();
-
+	m_pBlock = CreateBlockTable[type]();
 }
 
-Tetromino::Tetromino(Block_Type _type)
-	: x(4), y(0), bHold(true),
-	block(CreateBlockTable[_type]()),
-	HoldBlock(nullptr)
+Tetromino::Tetromino(Block_Type type)
+	: m_x(4), m_y(0), m_bHold(true),
+	m_pBlock(CreateBlockTable[type]()),
+	m_pHoldBlock(nullptr)
 {
 }
 
-Tetromino::Tetromino(Block_Type _type, POS _x, POS _y)
-	: x(_x), y(_y), bHold(true),
-	block(CreateBlockTable[_type]()),
-	HoldBlock(nullptr)
+Tetromino::Tetromino(Block_Type type, POS x, POS y)
+	: m_x(x), m_y(y), m_bHold(true),
+	m_pBlock(CreateBlockTable[type]()),
+	m_pHoldBlock(nullptr)
 {
 }
 
 Tetromino::~Tetromino()
 {
-	if (block != nullptr)
-		delete block;
-	if (HoldBlock != nullptr)
-		delete HoldBlock;
+	if (m_pBlock != nullptr)
+		delete m_pBlock;
+	if (m_pHoldBlock != nullptr)
+		delete m_pHoldBlock;
 
-	block = nullptr;
-	HoldBlock = nullptr;
+	m_pBlock = nullptr;
+	m_pHoldBlock = nullptr;
 }
 
-void Tetromino::SetPos(CPOS _x, CPOS _y)
+void Tetromino::SetPos(CPOS x, CPOS y)
 {
-	x = _x;
-	y = _y;
+	m_x = x;
+	m_y = y;
 }
 
-void Tetromino::SetBlockType(Block_Type _type)
+void Tetromino::SetBlockType(Block_Type type)
 {
-	if (block != nullptr)
-		delete block;
-	block = CreateBlockTable[_type]();
-	bHold = true;
+	if (m_pBlock != nullptr)
+		delete m_pBlock;
+	m_pBlock = CreateBlockTable[type]();
+	m_bHold = true;
 }
 
 void Tetromino::SetBlockType()
@@ -58,64 +57,64 @@ void Tetromino::SetBlockType()
 
 CPOS Tetromino::GetX() const
 {
-	return x;
+	return m_x;
 }
 
 CPOS Tetromino::GetY() const
 {
-	return y;
+	return m_y;
 }
 
 CPOSPTR Tetromino::Getdx() const
 {
-	return block->Getdx();
+	return m_pBlock->Getdx();
 }
 
 CPOSPTR Tetromino::Getdy() const
 {
-	return block->Getdy();
+	return m_pBlock->Getdy();
 }
 
 COLOR Tetromino::GetColor() const
 {
-	return block->GetColor();
+	return m_pBlock->GetColor();
 }
 
 
 void Tetromino::Rotate(bool reverse)
 {
-	block->Rotate(reverse);
+	m_pBlock->Rotate(reverse);
 
 	if (check())
 		return;
 
 	for (int i = 1; i <= 3; ++i) {
 		// check left
-		if (check(x + i, y)) {
-			x += i;
+		if (check(m_x + i, m_y)) {
+			m_x += i;
 			return;
 		}
 
 		// check right
-		if (check(x - i, y)) {
-			x -= i;
+		if (check(m_x - i, m_y)) {
+			m_x -= i;
 			return;
 		}
 
 		// check under
-		if (check(x, y - i)) {
-			y -= i;
+		if (check(m_x, m_y - i)) {
+			m_y -= i;
 			return;
 		}
 	}
 
-	block->Rotate(!reverse);
+	m_pBlock->Rotate(!reverse);
 }
 
 void Tetromino::Down()
 {
-	if (check(x, y + 1))
-		y++;
+	if (check(m_x, m_y + 1)) m_y++;
+
 	else {
 		SaveBlock();
 		SetPos();
@@ -125,7 +124,7 @@ void Tetromino::Down()
 
 void Tetromino::Drop()
 {
-	while (check(x, y + 1)) y++;
+	while (check(m_x, m_y + 1)) m_y++;
 
 	SaveBlock();
 	SetPos();
@@ -134,64 +133,36 @@ void Tetromino::Drop()
 
 void Tetromino::Left()
 {
-	if (check(x - 1, y))
-		x--;
+	if (check(m_x - 1, m_y))
+		m_x--;
 }
 
 void Tetromino::Right()
 {
-	if (check(x + 1, y))
-		x++;
+	if (check(m_x + 1, m_y))
+		m_x++;
 }
 
 void Tetromino::Hold()
 {
-	if (!bHold)
+	if (!m_bHold)
 		return;
 
-	Block* temp = block;
-	block = HoldBlock;
-	HoldBlock = temp;
+	Block* temp = m_pBlock;
+	m_pBlock = m_pHoldBlock;
+	m_pHoldBlock = temp;
 
-	if (block == nullptr)
+	if (m_pBlock == nullptr)
 		SetBlockType();
 
 	SetPos();
-	bHold = false;
+	m_bHold = false;
 }
 
-bool Tetromino::check(CPOS _x, CPOS _y) const
+bool Tetromino::check(CPOS x, CPOS y) const
 {
-	CPOSPTR dx = block->Getdx();
-	CPOSPTR dy = block->Getdy();
-
-	POS x = 0;
-	POS y = 0;
-
-	for (int i = 0; i < 4; ++i) {
-		x = _x + dx[i];
-		y = _y + dy[i];
-
-		if (!BoardSizeCheck(x, y))
-			return false;
-
-		if (board[y][x] != 0)
-			return false;
-	}
-	
-	return true;
-}
-
-bool Tetromino::check() const
-{
-	return check(x, y);
-}
-
-void Tetromino::SaveBlock()
-{
-	CPOSPTR dx = block->Getdx();
-	CPOSPTR dy = block->Getdy();
-	COLOR color = block->GetColor();
+	CPOSPTR dx = m_pBlock->Getdx();
+	CPOSPTR dy = m_pBlock->Getdy();
 
 	POS _x = 0;
 	POS _y = 0;
@@ -201,8 +172,36 @@ void Tetromino::SaveBlock()
 		_y = y + dy[i];
 
 		if (!BoardSizeCheck(_x, _y))
+			return false;
+
+		if (board[_y][_x] != 0)
+			return false;
+	}
+	
+	return true;
+}
+
+bool Tetromino::check() const
+{
+	return check(m_x, m_y);
+}
+
+void Tetromino::SaveBlock()
+{
+	CPOSPTR dx = m_pBlock->Getdx();
+	CPOSPTR dy = m_pBlock->Getdy();
+	COLOR color = m_pBlock->GetColor();
+
+	POS x = 0;
+	POS y = 0;
+
+	for (int i = 0; i < 4; ++i) {
+		x = m_x + dx[i];
+		y = m_y + dy[i];
+
+		if (!BoardSizeCheck(x, y))
 			continue;
 
-		board[_y][_x] = color;
+		board[y][x] = color;
 	}
 }

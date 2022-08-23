@@ -4,13 +4,16 @@
 #include "Tetromino.h"
 #include "Board.h"
 
-#define SCREEN_ROW_SIZE	50
-#define SCREEN_COL_SIZE 50
+#define TITLE "테트리스"
+
+#define SCREEN_ROW_SIZE	28
+#define SCREEN_COL_SIZE 27
 
 void ScreenInit();
 void ScreenFlipping();
 void ScreenClear();
 void ScreenRelease();
+void SetScreenSize(unsigned int width, unsigned int height);
 
 void GotoXY(POS x, POS y);
 void SetColor(COLOR color);

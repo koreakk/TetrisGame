@@ -3,71 +3,71 @@
 
 
 Block::Block()
-	: dx(nullptr), dy(nullptr), size(0), color(0), idx(0)
+	: m_dx(nullptr), m_dy(nullptr), m_count(0), m_index(0), m_color(0)
 {
 }
 
-Block::Block(CPOS _dx[][4], CPOS _dy[][4], POSSIZE _size, COLOR _color)
-	: dx(nullptr), dy(nullptr), size(_size), color(_color), idx(0)
+Block::Block(CPOS dx[][4], CPOS dy[][4], int count, COLOR color)
+	: m_dx(nullptr), m_dy(nullptr), m_count(count), m_index(0), m_color(color)
 {
-	dx = new POSPTR[size];
-	dy = new POSPTR[size];
+	m_dx = new POSPTR[m_count];
+	m_dy = new POSPTR[m_count];
 
-	for (int i = 0; i < size; i++) {
-		dx[i] = new short[4];
-		memcpy(dx[i], _dx[i], sizeof(short) * 4);
+	for (int i = 0; i < m_count; i++) {
+		m_dx[i] = new short[4];
+		memcpy(m_dx[i], dx[i], sizeof(short) * 4);
 
-		dy[i] = new short[4];
-		memcpy(dy[i], _dy[i], sizeof(short) * 4);
+		m_dy[i] = new short[4];
+		memcpy(m_dy[i], dy[i], sizeof(short) * 4);
 	}
 }
 
 Block::Block(const Block& rhs)
-	:dx(nullptr), dy(nullptr), size(0), color(0), idx(0)
+	:m_dx(nullptr), m_dy(nullptr), m_count(0), m_index(0), m_color(0)
 {
-	dx = new POSPTR[size];
-	dy = new POSPTR[size];
+	m_dx = new POSPTR[m_count];
+	m_dy = new POSPTR[m_count];
 
-	for (int i = 0; i < size; i++) {
-		dx[i] = new short[4];
-		memcpy(dx[i], rhs.dx[i], sizeof(short) * 4);
+	for (int i = 0; i < m_count; i++) {
+		m_dx[i] = new short[4];
+		memcpy(m_dx[i], rhs.m_dx[i], sizeof(short) * 4);
 
-		dy[i] = new short[4];
-		memcpy(dy[i], rhs.dy[i], sizeof(short) * 4);
+		m_dy[i] = new short[4];
+		memcpy(m_dy[i], rhs.m_dy[i], sizeof(short) * 4);
 	}
 }
 
 Block::Block(Block&& rhs) noexcept
-	:dx(nullptr), dy(nullptr), size(0), color(0), idx(0)
+	:m_dx(nullptr), m_dy(nullptr), m_count(0), m_index(0), m_color(0)
 {
-	size = rhs.size;
-	color = rhs.color;
-	idx = rhs.idx;
+	m_count = rhs.m_count;
+	m_color = rhs.m_color;
+	m_index = rhs.m_index;
 
-	dx = rhs.dx;
-	dy = rhs.dy;
+	m_dx = rhs.m_dx;
+	m_dy = rhs.m_dy;
 
-	rhs.dx = nullptr;
-	rhs.dy = nullptr;
+	rhs.m_dx = nullptr;
+	rhs.m_dy = nullptr;
 }
 
 Block& Block::operator=(const Block& rhs)
 {
 	Release();
 
-	size = rhs.size;
-	color = rhs.color;
-	idx = rhs.idx;
+	m_count = rhs.m_count;
+	m_color = rhs.m_color;
+	m_index = rhs.m_index;
 
-	dx = new POSPTR[size];
-	dy = new POSPTR[size];
+	m_dx = new POSPTR[m_count];
+	m_dy = new POSPTR[m_count];
 
-	for (int i = 0; i < size; i++) {
-		dx[i] = new short[4];
-		memcpy(dx[i], rhs.dx[i], sizeof(short) * 4);
+	for (int i = 0; i < m_count; i++) {
+		m_dx[i] = new short[4];
+		memcpy(m_dx[i], rhs.m_dx[i], sizeof(short) * 4);
 
-		dy[i] = new short[4];
-		memcpy(dy[i], rhs.dy[i], sizeof(short) * 4);
+		m_dy[i] = new short[4];
+		memcpy(m_dy[i], rhs.m_dy[i], sizeof(short) * 4);
 	}
 
 	return *this;
@@ -77,15 +77,15 @@ Block& Block::operator=(Block&& rhs) noexcept
 {
 	Release();
 
-	size = rhs.size;
-	color = rhs.color;
-	idx = rhs.idx;
+	m_count = rhs.m_count;
+	m_color = rhs.m_color;
+	m_index = rhs.m_index;
 
-	dx = rhs.dx;
-	dy = rhs.dy;
+	m_dx = rhs.m_dx;
+	m_dy = rhs.m_dy;
 
-	rhs.dx = nullptr;
-	rhs.dy = nullptr;
+	rhs.m_dx = nullptr;
+	rhs.m_dy = nullptr;
 
 	return *this;
 }
@@ -97,111 +97,111 @@ Block::	~Block()
 
 void Block::Release()
 {
-	if (dx != nullptr)
-		delete[] dx;
-	if (dy != nullptr)
-		delete[] dy;
+	if (m_dx != nullptr)
+		delete[] m_dx;
+	if (m_dy != nullptr)
+		delete[] m_dy;
 	
-	dx = nullptr;
-	dy = nullptr;
+	m_dx = nullptr;
+	m_dy = nullptr;
 }
 
 COLOR Block::GetColor() const 
 { 
-	return color;
+	return m_color;
 }
 
 CPOSPTR Block::Getdx() const
 { 
-	if (dx == nullptr)
+	if (m_dx == nullptr)
 		return nullptr;
 
-	return dx[idx];
+	return m_dx[m_index];
 }
 
 
 CPOSPTR Block::Getdy() const
 {
-	if (dy == nullptr)
+	if (m_dy == nullptr)
 		return nullptr;
 
-	return dy[idx];
+	return m_dy[m_index];
 }
 
 void Block::Rotate(bool reverse)
 {
-	idx += (reverse) ? -1 : 1;
-	idx %= size;
+	m_index += (reverse) ? -1 : 1;
+	m_index %= m_count;
 }
 
 Block* Block::CreateIBlock()
 {
-	POSSIZE size = 2;
-	CPOS _dx[][4] = { {0,0,0,0}, {0,1,2,3} };
-	CPOS _dy[][4] = { {0,1,2,3}, {0,0,0,0} };
-	COLOR _color = AQUA;
+	int count = 2;
+	CPOS dx[][4] = { {0,0,0,0}, {0,1,2,3} };
+	CPOS dy[][4] = { {0,1,2,3}, {0,0,0,0} };
+	COLOR color = AQUA;
 
-	return new Block(_dx, _dy, size, _color);
+	return new Block(dx, dy, count, color);
 }
 
 Block* Block::CreateOBlock()
 {
-	POSSIZE size = 1;
-	CPOS _dx[][4] = { {0,1,0,1} };
-	CPOS _dy[][4] = { {0,0,1,1} };
-	COLOR _color = YELLOW;
+	int count = 1;
+	CPOS dx[][4] = { {0,1,0,1} };
+	CPOS dy[][4] = { {0,0,1,1} };
+	COLOR color = YELLOW;
 
-	return new Block(_dx, _dy, size, _color);
+	return new Block(dx, dy, count, color);
 }
 
 Block* Block::CreateZBlock()
 {
-	POSSIZE size = 2;
-	CPOS _dx[][4] = { {0,1,1,2}, {1,0,1,0} };
-	CPOS _dy[][4] = { {0,0,1,1}, {0,1,1,2} };
-	COLOR _color = RED;
+	int count = 2;
+	CPOS dx[][4] = { {0,1,1,2}, {1,0,1,0} };
+	CPOS dy[][4] = { {0,0,1,1}, {0,1,1,2} };
+	COLOR color = RED;
 
-	return new Block(_dx, _dy, size, _color);
+	return new Block(dx, dy, count, color);
 }
 
 Block* Block::CreateSBlock()
 {
-	POSSIZE size = 2;
-	CPOS _dx[][4] = { {1,2,0,1}, {0,0,1,1} };
-	CPOS _dy[][4] = { {0,0,1,1}, {0,1,1,2} };
-	COLOR _color = GREEN;
+	int count = 2;
+	CPOS dx[][4] = { {1,2,0,1}, {0,0,1,1} };
+	CPOS dy[][4] = { {0,0,1,1}, {0,1,1,2} };
+	COLOR color = GREEN;
 
-	return new Block(_dx, _dy, size, _color);
+	return new Block(dx, dy, count,color);
 }
 
 Block* Block::CreateJBlock()
 {
-	POSSIZE size = 4;
-	CPOS _dx[][4] = { {1,1,0,1}, {0,0,1,2}, {0,1,0,0}, {0,1,2,2} };
-	CPOS _dy[][4] = { {0,1,2,2}, {0,1,1,1}, {0,0,1,2}, {0,0,0,1} };
-	COLOR _color = BLUE;
+	int count = 4;
+	CPOS dx[][4] = { {1,1,0,1}, {0,0,1,2}, {0,1,0,0}, {0,1,2,2} };
+	CPOS dy[][4] = { {0,1,2,2}, {0,1,1,1}, {0,0,1,2}, {0,0,0,1} };
+	COLOR color = BLUE;
 
-	return new Block(_dx, _dy, size, _color);
+	return new Block(dx, dy, count, color);
 }
 
 Block* Block::CreateLBlock()
 {
-	POSSIZE size = 4;
-	CPOS _dx[][4] = { {0,0,0,1}, {0,1,2,0}, {0,1,1,1}, {2,0,1,2} };
-	CPOS _dy[][4] = { {0,1,2,2}, {0,0,0,1}, {0,0,1,2}, {0,1,1,1} };
-	COLOR _color = WHITE;
+	int count = 4;
+	CPOS dx[][4] = { {0,0,0,1}, {0,1,2,0}, {0,1,1,1}, {2,0,1,2} };
+	CPOS dy[][4] = { {0,1,2,2}, {0,0,0,1}, {0,0,1,2}, {0,1,1,1} };
+	COLOR color = WHITE;
 
-	return new Block(_dx, _dy, size, _color);
+	return new Block(dx, dy, count, color);
 }
 
 Block* Block::CreateTBlock()
 {
-	POSSIZE size = 4;
-	CPOS _dx[][4] = { {0,1,2,1}, {1,0,1,1}, {1,0,1,2}, {0,0,1,0} };
-	CPOS _dy[][4] = { {0,0,0,1}, {0,1,1,2}, {0,1,1,1}, {0,1,1,2} };
-	COLOR _color = PURPLE;
+	int count = 4;
+	CPOS dx[][4] = { {0,1,2,1}, {1,0,1,1}, {1,0,1,2}, {0,0,1,0} };
+	CPOS dy[][4] = { {0,0,0,1}, {0,1,1,2}, {0,1,1,1}, {0,1,1,2} };
+	COLOR color = PURPLE;
 
-	return new Block(_dx, _dy, size, _color);
+	return new Block(dx, dy, count, color);
 }
 
 extern CreateBlock CreateBlockTable[7] = {

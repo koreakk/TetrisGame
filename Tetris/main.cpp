@@ -4,7 +4,7 @@
 #include "Tetromino.h"
 #include "Draw.h"
 
-#define TITLE "테트리스"
+
 
 Tetromino tetromino;
 int score = 0;
@@ -71,9 +71,7 @@ void Run()
 
 int main()
 {
-	SetConsoleTitleA(TITLE);
 	ScreenInit();
-	//system("mode con:cols=26 lines=28");
 	Run();
 
 	ScreenRelease();

@@ -1,64 +1,79 @@
 #include "stdafx.h"
 #include "Draw.h"
 
-static HANDLE	ScreenBuffer[2];
-static int		ScreenIndex;
+static HANDLE	g_hScreenBuffer[2];
+static int		g_ScreenIndex;
 
 void ScreenInit()
 {
-	COORD size = { SCREEN_COL_SIZE, SCREEN_ROW_SIZE };
-	SMALL_RECT rect;
 	CONSOLE_CURSOR_INFO ConsoleCursor;
-
-	rect.Bottom = SCREEN_ROW_SIZE - 1;
-	rect.Right  = SCREEN_COL_SIZE - 1;
-	rect.Top    = 0;
-	rect.Left   = 0;
 
 	ConsoleCursor.bVisible = FALSE;
 	ConsoleCursor.dwSize   = 1;
 	
-	ScreenBuffer[0] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-	ScreenBuffer[1] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-
-	SetConsoleScreenBufferSize(ScreenBuffer[0], size);
-	SetConsoleScreenBufferSize(ScreenBuffer[1], size);
-
-	SetConsoleWindowInfo(ScreenBuffer[0], TRUE, &rect);
-	SetConsoleWindowInfo(ScreenBuffer[1], TRUE, &rect);
+	g_hScreenBuffer[0] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
+	g_hScreenBuffer[1] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 	
-	SetConsoleCursorInfo(ScreenBuffer[0], &ConsoleCursor);
-	SetConsoleCursorInfo(ScreenBuffer[1], &ConsoleCursor);
+	SetConsoleCursorInfo(g_hScreenBuffer[0], &ConsoleCursor);
+	SetConsoleCursorInfo(g_hScreenBuffer[1], &ConsoleCursor);
+
+	SetConsoleTitleA(TITLE);
+	SetScreenSize(SCREEN_COL_SIZE, SCREEN_ROW_SIZE);
 }
 
 void ScreenFlipping()
 {
-	SetConsoleActiveScreenBuffer(ScreenBuffer[ScreenIndex]);
-	ScreenIndex = (ScreenIndex + 1) % 2;
+	SetConsoleActiveScreenBuffer(g_hScreenBuffer[g_ScreenIndex]);
+	g_ScreenIndex = (g_ScreenIndex == 0) ? 1 : 0;
 }
 
 void ScreenClear()
 {
+	unsigned int size = 100 * 100;
+
+	DWORD dw = 0;
 	COORD pos = { 0, 0 };
-	DWORD dw;
-	FillConsoleOutputCharacterA(ScreenBuffer[ScreenIndex], ' ', SCREEN_ROW_SIZE * SCREEN_COL_SIZE, pos, &dw);
+
+	FillConsoleOutputCharacterA(g_hScreenBuffer[g_ScreenIndex], ' ', size, pos, &dw);
+	FillConsoleOutputAttribute(g_hScreenBuffer[g_ScreenIndex], 0, size, pos, &dw);
 }
 
 void ScreenRelease()
 {
-	CloseHandle(ScreenBuffer[0]);
-	CloseHandle(ScreenBuffer[1]);
+	CloseHandle(g_hScreenBuffer[0]);
+	CloseHandle(g_hScreenBuffer[1]);
+}
+
+void SetScreenSize(unsigned int width, unsigned int height)
+{
+	CHAR buffer[50] = { 0, };
+	sprintf_s(buffer, 50, "mode con cols=%d lines=%d", width, height);
+	system(buffer);
+
+	COORD size = { static_cast<SHORT>(width), static_cast<SHORT>(height) };
+	SMALL_RECT rect = { 0, };
+
+	rect.Right  = size.X - 1;
+	rect.Bottom = size.Y - 1;
+	rect.Left   = 0;
+	rect.Top    = 0;
+
+	SetConsoleScreenBufferSize(g_hScreenBuffer[0], size);
+	SetConsoleScreenBufferSize(g_hScreenBuffer[1], size);
+
+	SetConsoleWindowInfo(g_hScreenBuffer[0], TRUE, &rect);
+	SetConsoleWindowInfo(g_hScreenBuffer[1], TRUE, &rect);
 }
 
 void GotoXY(POS x, POS y)
 {
 	COORD pos = { x, y };
-	SetConsoleCursorPosition(ScreenBuffer[ScreenIndex], pos);
+	SetConsoleCursorPosition(g_hScreenBuffer[g_ScreenIndex], pos);
 }
 
 void SetColor(COLOR color)
 {
-	SetConsoleTextAttribute(ScreenBuffer[ScreenIndex], color);
+	SetConsoleTextAttribute(g_hScreenBuffer[g_ScreenIndex], color);
 }
 
 void Draw(POS x, POS y, COLOR Color, LPCSTR Format, ...)
@@ -66,16 +81,22 @@ void Draw(POS x, POS y, COLOR Color, LPCSTR Format, ...)
 	va_list args;
 	va_start(args, Format);
 
-	int length = _vscprintf(Format, args) + 1;
-	LPSTR pBuf = new CHAR[length];
+	int length = _vscprintf(Format, args);
+	LPSTR pBuf = new CHAR[length + 1];
 
-	vsprintf_s(pBuf, length, Format, args);
+	vsprintf_s(pBuf, (size_t)length + 1, Format, args);
 
-	GotoXY(x, y);
 	SetColor(Color);
+	GotoXY(x, y);
+	HANDLE hCurrentBuffer = g_hScreenBuffer[g_ScreenIndex];
 
 	DWORD dw;
-	WriteFile(ScreenBuffer[ScreenIndex], pBuf, length - 1, &dw, NULL);
+	//COORD pos = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
+
+	//FillConsoleOutputAttribute(hCurrentBuffer, 0, length, pos, &dw);
+	//WriteConsoleOutputCharacterA(hCurrentBuffer, pBuf, length, pos, &dw);
+
+	WriteFile(hCurrentBuffer, pBuf, length, &dw, NULL);
 
 	delete[] pBuf;
 	va_end(args);
@@ -86,15 +107,22 @@ void Draw(POS x, POS y, LPCSTR Format, ...)
 	va_list args;
 	va_start(args, Format);
 
-	int length = _vscprintf(Format, args) + 1;
-	LPSTR pBuf = new CHAR[length];
+	int length = _vscprintf(Format, args);
+	LPSTR pBuf = new CHAR[length + 1];
 
-	vsprintf_s(pBuf, length, Format, args);
+	vsprintf_s(pBuf, (size_t)length + 1, Format, args);
 
 	GotoXY(x, y);
 
+	HANDLE hCurrentBuffer = g_hScreenBuffer[g_ScreenIndex];
+
 	DWORD dw;
-	WriteFile(ScreenBuffer[ScreenIndex], pBuf, length - 1, &dw, NULL);
+	//COORD pos = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
+
+	//FillConsoleOutputAttribute(hCurrentBuffer, 0, length, pos, &dw);
+	//WriteConsoleOutputCharacterA(hCurrentBuffer, pBuf, length, pos, &dw);
+	
+	WriteFile(hCurrentBuffer, pBuf, length, &dw, NULL);
 
 	delete[] pBuf;
 	va_end(args);
