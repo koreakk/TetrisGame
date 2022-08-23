@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Block.h"
-#include "Tetromino.h"
 #include "Board.h"
+#include "Tetromino.h"
 #include "Draw.h"
 
 #define TITLE "테트리스"
@@ -9,17 +9,18 @@
 Tetromino tetromino;
 int score = 0;
 
-
 void Init();
 bool GameOver();
 bool Pause();
 
 void Run()
 {
+	bool brunning = true;
+
 	int n = 0;
-	while (1)
+	while (brunning)
 	{
-		system("cls");
+		ScreenClear();
 
 		if (_kbhit())
 		{
@@ -44,57 +45,53 @@ void Run()
 				tetromino.Hold();
 				break;
 			case 'z':
-				if (Pause())
-					return;
+				brunning = !Pause();
 				break;
 			default:
 				break;
 			}
 		}
-		if (n++ % 5 == 0)
+		if (n++ % 3 == 0)
 			tetromino.Down();
 		
 		if (!tetromino.check())
-		{
-			if (GameOver())
-				return;
-		}
+			brunning = !GameOver();
 
-		score += RemoveLines();
+		score += BoardUpdate();
 
 		DrawBorder();
 		DrawBlock();
 		DrawTetromino(tetromino);
-
 		Draw(0, BOARD_ROW_SIZE + 2, WHITE, "score : %d", score);
+
 		Sleep(100);
+		ScreenFlipping();
 	}
 }
 
-
-
 int main()
 {
-	Init();
+	SetConsoleTitleA(TITLE);
+	ScreenInit();
+	//system("mode con:cols=26 lines=28");
 	Run();
 
-	system("cls");
-	SetColor(WHITE);
-
+	ScreenRelease();
 	return 0;
 }
 
 bool GameOver()
 {
 	bool bEnd = false;
+	ScreenClear();
 
-	system("cls");
 	SetColor(WHITE);
 
 	Draw(10, 10, "GAME OVER");
 	Draw(8, 14, "play again [x]");
 	Draw(8, 15, "exit       [z]");
 	Draw(17, 20, "score : %d", score);
+	ScreenFlipping();
 
 	while (true) {
 		if (_kbhit())
@@ -116,25 +113,26 @@ bool GameOver()
 
 exitloop:
 	score = 0;
-	ClearBorad();
+	BoardClear();
 	tetromino.SetBlockType();
 	tetromino.SetPos();
 
-	system("cls");
-	SetColor(WHITE);
+	ScreenClear();
 	return bEnd;
 }
 bool Pause()
 {
 	bool bEnd = false;
+	
+	ScreenClear();
 
-	system("cls");
 	SetColor(WHITE);
 
 	Draw(10, 10, "Pause");
 	Draw(8, 14, "play again [x]");
 	Draw(8, 15, "exit       [z]");
 	Draw(17, 20, "score : %d", score);
+	ScreenFlipping();
 
 	while (true) {
 		if (_kbhit())
@@ -155,12 +153,6 @@ bool Pause()
 	}
 
 exitloop:
-	system("cls");
-	SetColor(WHITE);
+	ScreenClear();
 	return bEnd;
-}
-void Init()
-{
-	system(" mode  con lines=26   cols=28 ");
-	SetConsoleTitleA(TITLE);
 }

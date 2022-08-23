@@ -30,7 +30,7 @@ void RemoveLine(POS row)
 		memcpy(board[i], board[i - 1], sizeof(board[i]));
 }
 
-int RemoveLines()
+int BoardUpdate()
 {
 	int count = 0;
 
@@ -44,7 +44,7 @@ int RemoveLines()
 	return count;
 }
 
-void ClearBorad()
+void BoardClear()
 {
 	for (POS i = 0; i < BOARD_ROW_SIZE; ++i)
 		memset(board[i], 0, sizeof(board[i]));
