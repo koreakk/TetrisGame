@@ -204,7 +204,7 @@ Block* Block::CreateTBlock()
 	return new Block(dx, dy, count, color);
 }
 
-extern CreateBlock CreateBlockTable[7] = {
+extern CreateBlockFunc CreateBlockTable[7] = {
 	Block::CreateIBlock,
 	Block::CreateOBlock,
 	Block::CreateZBlock,
@@ -214,6 +214,6 @@ extern CreateBlock CreateBlockTable[7] = {
 	Block::CreateTBlock
 };
 
-Block_Type randomBlockType() {
-	return (Block_Type)(rand() % 7);
+EBlockType randomBlockType() {
+	return (EBlockType)(rand() % 7);
 }

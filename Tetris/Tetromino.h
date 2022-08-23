@@ -15,12 +15,12 @@ private:
 	bool m_bHold;
 public:
 	Tetromino();
-	explicit Tetromino(Block_Type type);
-	Tetromino(Block_Type type, POS x, POS y);
+	explicit Tetromino(EBlockType type);
+	Tetromino(EBlockType type, POS x, POS y);
 	~Tetromino();
 
 	void SetPos(CPOS x = 4, CPOS y = 0);
-	void SetBlockType(Block_Type type);
+	void SetBlockType(EBlockType type);
 	void SetBlockType();
 
 	CPOS GetX() const;

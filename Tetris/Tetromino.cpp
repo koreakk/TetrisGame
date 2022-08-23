@@ -6,18 +6,18 @@ Tetromino::Tetromino()
 	m_pBlock(nullptr),
 	m_pHoldBlock(nullptr)
 {
-	Block_Type type = randomBlockType();
+	EBlockType type = randomBlockType();
 	m_pBlock = CreateBlockTable[type]();
 }
 
-Tetromino::Tetromino(Block_Type type)
+Tetromino::Tetromino(EBlockType type)
 	: m_x(4), m_y(0), m_bHold(true),
 	m_pBlock(CreateBlockTable[type]()),
 	m_pHoldBlock(nullptr)
 {
 }
 
-Tetromino::Tetromino(Block_Type type, POS x, POS y)
+Tetromino::Tetromino(EBlockType type, POS x, POS y)
 	: m_x(x), m_y(y), m_bHold(true),
 	m_pBlock(CreateBlockTable[type]()),
 	m_pHoldBlock(nullptr)
@@ -41,7 +41,7 @@ void Tetromino::SetPos(CPOS x, CPOS y)
 	m_y = y;
 }
 
-void Tetromino::SetBlockType(Block_Type type)
+void Tetromino::SetBlockType(EBlockType type)
 {
 	if (m_pBlock != nullptr)
 		delete m_pBlock;

@@ -50,10 +50,10 @@ public:
 	static Block* CreateTBlock();
 };
 
-using CreateBlock = Block * (*)();
-extern CreateBlock CreateBlockTable[7];
+using  CreateBlockFunc = Block * (*)();
+extern CreateBlockFunc CreateBlockTable[7];
 
-typedef enum {
+enum EBlockType{
 	I_Block = 0,
 	O_Block,
 	Z_Block,
@@ -61,6 +61,6 @@ typedef enum {
 	J_Block,
 	L_Block,
 	T_Block
-} Block_Type;
+};
 
-Block_Type randomBlockType();
+EBlockType randomBlockType();

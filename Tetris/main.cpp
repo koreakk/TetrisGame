@@ -4,7 +4,11 @@
 #include "Tetromino.h"
 #include "Draw.h"
 
-
+#define UP		72
+#define LEFT	75
+#define RIGHT	77
+#define DOWN	80
+#define SPACE	32
 
 Tetromino tetromino;
 int score = 0;
@@ -26,19 +30,19 @@ void Run()
 		{
 			switch (_getch())
 			{
-			case 'w':
+			case UP:
 				tetromino.Rotate();
 				break;
-			case 'a':
+			case LEFT:
 				tetromino.Left();
 				break;
-			case 'd':
+			case RIGHT:
 				tetromino.Right();
 				break;
 			case 's':
 				tetromino.Down();
 				break;
-			case ' ':
+			case SPACE:
 				tetromino.Drop();
 				break;
 			case 'c':
